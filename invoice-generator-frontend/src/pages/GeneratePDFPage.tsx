@@ -15,7 +15,7 @@ const GeneratePDFPage: React.FC = () => {
     const token = localStorage.getItem('token');
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/invoices/generate',
+        'https://invoice-generator-backend-beryl.vercel.app/api/invoices/generate',
         { products },
         {
           headers: {
