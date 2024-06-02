@@ -27,6 +27,11 @@ app.use(cors());
   app.use('/api/products', productRoutes);
   app.use('/api/invoices', invoiceRoutes);
 
+  // Test route to ensure server is running
+  app.get('/', (req, res) => {
+    res.send('Hello, server');
+  });
+
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => console.log(chalk.blue(`Server running on port ${PORT}`)));
 })();
