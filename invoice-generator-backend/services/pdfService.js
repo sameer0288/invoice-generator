@@ -1,16 +1,14 @@
-const chromium = require('chrome-aws-lambda');
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
+
 exports.generateInvoicePDF = async (invoiceData) => {
   let browser;
   try {
+    // Increase timeout settings for launch and operations
     browser = await puppeteer.launch({
-      args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
       timeout: 120000, // 120 seconds
     });
-
     const page = await browser.newPage();
     page.setDefaultNavigationTimeout(120000); // 120 seconds
     page.setDefaultTimeout(120000); // 120 seconds
@@ -18,6 +16,7 @@ exports.generateInvoicePDF = async (invoiceData) => {
     const totalAmount = invoiceData.products.reduce((total, product) => total + product.qty * product.rate, 0);
     const gst = totalAmount * 0.18;
     const grandTotal = totalAmount + gst;
+
     const invoiceHtml = `
     <!DOCTYPE html>
     <html lang="en">
