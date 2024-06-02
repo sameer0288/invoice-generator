@@ -7,13 +7,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const authRoutes = require('./routes/authRoutes');
-const productRoutes = require('./routes/productRoutes');
-const invoiceRoutes = require('./routes/invoiceRoutes');
-
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 const corsOptions = {
   origin: 'https://invoice-generator-frontend-iota.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -22,7 +16,13 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+const authRoutes = require('./routes/authRoutes');
+const productRoutes = require('./routes/productRoutes');
+const invoiceRoutes = require('./routes/invoiceRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
