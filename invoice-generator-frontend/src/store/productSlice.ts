@@ -1,10 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { RootState } from './index';
-
-
-
-
+// import { RootState } from './index';
 
 interface Product {
   _id: string;
@@ -25,8 +21,8 @@ const initialState: ProductState = {
   error: null,
 };
 
-export const fetchProducts = createAsyncThunk('products/fetchProducts', async (_, { getState }) => {
-  const state = getState() as RootState;
+export const fetchProducts = createAsyncThunk('products/fetchProducts', async () => {
+  // const state = getState() as RootState;
   const token = localStorage.getItem('token');
   try {
     const response = await axios.get('https://invoice-generator-backend-gamma.vercel.app/api/products', {
@@ -40,8 +36,8 @@ export const fetchProducts = createAsyncThunk('products/fetchProducts', async (_
   }
 });
 
-export const addProduct = createAsyncThunk('products/addProduct', async (product: Product, { getState }) => {
-  const state = getState() as RootState;
+export const addProduct = createAsyncThunk('products/addProduct', async (product: Product) => {
+  // const state = getState() as RootState;
   const token = localStorage.getItem('token');
   try {
     const response = await axios.post('https://invoice-generator-backend-gamma.vercel.app/api/products', product, {
@@ -57,8 +53,8 @@ export const addProduct = createAsyncThunk('products/addProduct', async (product
 
 export const updateProduct = createAsyncThunk(
   'products/updateProduct',
-  async ({ id, product }: { id: string; product: Product }, { getState }) => {
-    const state = getState() as RootState;
+  async ({ id, product }: { id: string; product: Product }) => {
+    // const state = getState() as RootState;
     const token = localStorage.getItem('token');
     try {
       const response = await axios.put(`https://invoice-generator-backend-gamma.vercel.app/api/products/${id}`, product, {
@@ -73,8 +69,8 @@ export const updateProduct = createAsyncThunk(
   }
 );
 
-export const deleteProduct = createAsyncThunk('products/deleteProduct', async (id: string, { getState }) => {
-  const state = getState() as RootState;
+export const deleteProduct = createAsyncThunk('products/deleteProduct', async (id: string) => {
+  // const state = getState() as RootState;
   const token = localStorage.getItem('token');
   try {
     await axios.delete(`https://invoice-generator-backend-gamma.vercel.app/api/products/${id}`, {
@@ -103,7 +99,7 @@ export const productSlice = createSlice({
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message;
+        state.error = action.error.message || null;
       })
       .addCase(addProduct.fulfilled, (state, action) => {
         state.products.push(action.payload);

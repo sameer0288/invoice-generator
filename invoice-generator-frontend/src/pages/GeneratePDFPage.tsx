@@ -5,7 +5,7 @@ import { RootState } from '../store';
 
 const GeneratePDFPage: React.FC = () => {
   const products = useSelector((state: RootState) => state.products.products);
-  const user = useSelector((state: RootState) => state.user.token);
+  // const user = useSelector((state: RootState) => state.user.token);
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
