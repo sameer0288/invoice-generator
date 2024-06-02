@@ -1,6 +1,6 @@
 # Invoice Generator
 
-# Live URL:- 
+# Live URL:- https://invoice-generator-frontend-seven.vercel.app/
 This is a full-stack web application for generating invoices using the MERN stack (MongoDB, Express.js, React, Node.js). The application allows users to create and download invoices in PDF format.
 
 ## Tech Stack
