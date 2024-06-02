@@ -68,7 +68,7 @@ const AddProductPage: React.FC = () => {
   const handleLogout = () => {
     // Clear token and refresh the page
     localStorage.removeItem('token');
-    window.location.reload();
+    window.location.href = "/";
   };
   return (
     <div className="container mx-auto p-6">
