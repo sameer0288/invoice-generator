@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const http =require("http");
+const http = require("http");
 const cookieParser = require("cookie-parser");
 const dotenv = require('dotenv');
 
@@ -12,25 +12,37 @@ const productRoutes = require('./routes/productRoutes');
 const invoiceRoutes = require('./routes/invoiceRoutes');
 
 const app = express();
-app.use(cors());
+
+// Define allowed origins
+const allowedOrigins = ['https://invoice-generator-frontend-murex.vercel.app'];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://invoice-generator-frontend-murex.vercel.app/');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
-
-
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/invoices', invoiceRoutes);
-
-
 
 const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
@@ -44,4 +56,3 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
   console.log({ err });
   process.exit(1);
 });
-
