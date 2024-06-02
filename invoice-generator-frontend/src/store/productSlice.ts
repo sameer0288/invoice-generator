@@ -25,7 +25,7 @@ export const fetchProducts = createAsyncThunk('products/fetchProducts', async ()
   // const state = getState() as RootState;
   const token = localStorage.getItem('token');
   try {
-    const response = await axios.get('https://invoice-generator-backend-gamma.vercel.app/api/products', {
+    const response = await axios.get('https://invoice-generator-backend-theta.vercel.app/api/products', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -40,7 +40,7 @@ export const addProduct = createAsyncThunk('products/addProduct', async (product
   // const state = getState() as RootState;
   const token = localStorage.getItem('token');
   try {
-    const response = await axios.post('https://invoice-generator-backend-gamma.vercel.app/api/products', product, {
+    const response = await axios.post('https://invoice-generator-backend-theta.vercel.app/api/products', product, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -57,7 +57,7 @@ export const updateProduct = createAsyncThunk(
     // const state = getState() as RootState;
     const token = localStorage.getItem('token');
     try {
-      const response = await axios.put(`https://invoice-generator-backend-gamma.vercel.app/api/products/${id}`, product, {
+      const response = await axios.put(`https://invoice-generator-backend-theta.vercel.app/api/products/${id}`, product, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -73,7 +73,7 @@ export const deleteProduct = createAsyncThunk('products/deleteProduct', async (i
   // const state = getState() as RootState;
   const token = localStorage.getItem('token');
   try {
-    await axios.delete(`https://invoice-generator-backend-gamma.vercel.app/api/products/${id}`, {
+    await axios.delete(`https://invoice-generator-backend-theta.vercel.app/api/products/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
