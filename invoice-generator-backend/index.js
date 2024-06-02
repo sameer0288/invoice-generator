@@ -14,7 +14,14 @@ const invoiceRoutes = require('./routes/invoiceRoutes');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors());
+const corsOptions = {
+  origin: 'https://invoice-generator-frontend-iota.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
