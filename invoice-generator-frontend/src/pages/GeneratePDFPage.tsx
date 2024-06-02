@@ -5,7 +5,6 @@ import { RootState } from '../store';
 
 const GeneratePDFPage: React.FC = () => {
   const products = useSelector((state: RootState) => state.products.products);
-  // const user = useSelector((state: RootState) => state.user.token);
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -26,28 +25,43 @@ const GeneratePDFPage: React.FC = () => {
         }
       );
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'invoice.pdf');
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      if (response.status === 201 || response.status === 200) {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'invoice.pdf');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } else {
+        setErrorMessage('Error generating PDF. Please try again later.');
+      }
     } catch (error) {
       console.error('Error generating PDF', error);
-      setErrorMessage('Error generating PDF. Please try again later.');
+
+      if (axios.isAxiosError(error)) {
+        // Axios-specific error
+        setErrorMessage(error.response?.data?.message || 'Error generating PDF. Please try again later.');
+      } else if (error instanceof Error) {
+        // Generic error
+        setErrorMessage(error.message);
+      } else {
+        // Unknown error
+        setErrorMessage('An unknown error occurred. Please try again later.');
+      }
     } finally {
       setIsGenerating(false);
     }
   };
+
   const handleLogout = () => {
-    // Clear token and refresh the page
     localStorage.removeItem('token');
-    window.location.reload();
+    window.location.href = "/";
   };
+
   return (
     <div className="container mx-auto flex justify-center items-center h-screen">
-        <button
+      <button
         onClick={handleLogout}
         className="absolute top-0 right-0 mt-4 mr-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
       >
