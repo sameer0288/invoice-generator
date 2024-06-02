@@ -1,14 +1,19 @@
-const puppeteer = require('puppeteer');
+const chromium = require('chrome-aws-lambda');
+const puppeteer = require('puppeteer-core');
 
 exports.generateInvoicePDF = async (invoiceData) => {
   let browser;
   try {
-    // Increase timeout settings for launch and operations
+    console.log('Launching browser');
     browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
       timeout: 120000, // 120 seconds
     });
+
+    console.log('Opening new page');
     const page = await browser.newPage();
     page.setDefaultNavigationTimeout(120000); // 120 seconds
     page.setDefaultTimeout(120000); // 120 seconds
@@ -17,6 +22,7 @@ exports.generateInvoicePDF = async (invoiceData) => {
     const gst = totalAmount * 0.18;
     const grandTotal = totalAmount + gst;
 
+    console.log('Creating invoice HTML');
     const invoiceHtml = `
     <!DOCTYPE html>
     <html lang="en">
@@ -65,10 +71,9 @@ exports.generateInvoicePDF = async (invoiceData) => {
             padding: 8px;
             text-align: left;
           }
-          .bold{
-            font-size:"12px";
+          .bold {
+            font-size: 12px;
             font-weight: bold;
-
           }
           th {
             background-color: #f2f2f2;
@@ -76,29 +81,25 @@ exports.generateInvoicePDF = async (invoiceData) => {
           .text-right {
             text-align: right;
           }
-          #qty{
+          #qty {
             color: #007bff;
           }
-          .box{
+          .box {
             display: flex;
-            /* justify-content: space-between; */
             align-items: end;
             justify-content: end;
-            /* border: 1px solid red; */
           }
           .totals {
             border-top: 2px solid #eee;
             padding-top: 10px;
             margin-top: 3rem;
             width: 50%;
-            /* border: 1px solid red; */
           }
           .totals div {
             display: flex;
             justify-content: space-between;
             padding: 5px 0;
-            margin-top:  1.2rem;
-       
+            margin-top: 1.2rem;
           }
           .totals .label {
             font-weight: bold;
@@ -107,17 +108,15 @@ exports.generateInvoicePDF = async (invoiceData) => {
             color: #007bff;
             font-size: 18px;
           }
-    
-          .total-box{
+          .total-box {
             border-top: 2px solid #cec8c8;
             border-bottom: 2px solid #cec8c8;
-            padding: 1rem 0rem !important;
+            padding: 1rem 0 !important;
           }
-    
-          .bottom{
+          .bottom {
             margin-top: 6rem;
           }
-          .footer{
+          .footer {
             margin-top: 2rem;
             text-align: start;
             font-size: 18px;
@@ -128,12 +127,10 @@ exports.generateInvoicePDF = async (invoiceData) => {
             border-radius: 50px;
             background-color: #1a1919;
           }
-          .footer p{
-            /* margin-left: 2rem; */
+          .footer p {
             color: #fff;
             font-size: 14px;
             padding-top: 5px;
-            
           }
         </style>
     </head>
@@ -167,40 +164,46 @@ exports.generateInvoicePDF = async (invoiceData) => {
                       .join('')}
                 </tbody>
             </table>
-            <div class="box"> <div class="totals">
-                <div>
-                    <span class="label">Total:</span>
-                    <span>INR ${totalAmount.toFixed(2)}</span>
-                </div>
-                <div>
-                    <span class="label">GST:</span>
-                    <span>18%</span>
-                </div>
-                <div class="total-box">
-                    <span class="label grand-total">Grand Total:</span>
-                    <span class="grand-total">₹ ${grandTotal.toFixed(2)}</span>
+            <div class="box">
+              <div class="totals">
+                  <div>
+                      <span class="label">Total:</span>
+                      <span>INR ${totalAmount.toFixed(2)}</span>
+                  </div>
+                  <div>
+                      <span class="label">GST:</span>
+                      <span>18%</span>
+                  </div>
+                  <div class="total-box">
+                      <span class="label grand-total">Grand Total:</span>
+                      <span class="grand-total">₹ ${grandTotal.toFixed(2)}</span>
+                  </div>
+              </div>
+            </div>
+            <div class="bottom">
+                <p>Valid until: 12/04/23</p>
+                <div class="footer">
+                    <p>Terms and Conditions</p>
+                    <p>We are happy to supply any further information you may need and trust that you will call on us to fill your order, which will receive our prompt and careful attention.</p>
                 </div>
             </div>
-        </div>
-           <div class="bottom">
-            <p>Valid until: 12/04/23 </p>
-            <div class="footer">
-                <p>Terms and Conditions</p>
-                <p>we are happy to supply any further information you may need and trust that you call on us to fill your order. which will receive our prompt and careful attention</p>
-            </div>
-        </div>
         </div>
     </body>
     </html>
     `;
 
-    await page.setContent(invoiceHtml, { waitUntil: 'networkidle0' }); // Wait until no network connections for at least 500 ms
+    console.log('Setting page content');
+    await page.setContent(invoiceHtml, { waitUntil: 'networkidle0' });
+
+    console.log('Generating PDF');
     const pdfBuffer = await page.pdf({ format: 'A4' });
     await browser.close();
 
+    console.log('PDF generation successful');
     return pdfBuffer;
   } catch (error) {
     console.error(`Error occurred while generating PDF: ${error.message}`, error);
+    if (browser) await browser.close(); // Ensure the browser is closed in case of an error
     throw error;
   }
 };
