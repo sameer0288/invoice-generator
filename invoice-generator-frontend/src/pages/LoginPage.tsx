@@ -14,7 +14,7 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://invoice-generator-backend-theta.vercel.app/api/auth/login', { email, password });
+      const response = await axios.post('https://invoice-generator-eta-two.vercel.app/api/auth/login', { email, password });
       // dispatch(setToken(response.data.token));
       localStorage.setItem('token', response.data.token);
       window.location.reload();
