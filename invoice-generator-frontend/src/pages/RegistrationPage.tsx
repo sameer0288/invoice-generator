@@ -14,7 +14,7 @@ const RegistrationPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post('https://invoice-generator-eta-two.vercel.app/api/auth/register', { name, email, password });
+      await axios.post('http://localhost:5000/api/auth/register', { name, email, password });
       toast.success('Registration successful!');
       navigate('/');
     } catch (err) {
