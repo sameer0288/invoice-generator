@@ -11,7 +11,9 @@ const invoiceRoutes = require('./routes/invoiceRoutes');
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'https://invoice-generator-frontend-seven.vercel.app'
+}));
 
 (async () => {
   const chalk = (await import('chalk')).default;  // Use dynamic import for chalk
